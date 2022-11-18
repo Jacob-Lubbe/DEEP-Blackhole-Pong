@@ -18,7 +18,7 @@ fps = pygame.time.Clock()
 WHITE = (255, 255, 255)
 ORANGE = (255, 140, 0)
 GREEN = (0, 255, 0)
-BLACK = (0, 0, 0)
+BLACK = (24, 36, 56)
 
 
 WIDTH = 600
@@ -30,7 +30,7 @@ HALF_PAD_WIDTH = PAD_WIDTH // 2
 HALF_PAD_HEIGHT = PAD_HEIGHT // 2
 ball_pos = [0, 0]
 ball_vel = [0, 0]
-paddle1_vel = 0
+paddle1_vel = [0, 0]
 paddle2_vel = 0
 l_score = 0
 r_score = 0
@@ -39,6 +39,12 @@ r_score = 0
 window = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 pygame.display.set_caption("Daylight Pong")
 
+class background(pygame.sprite.Sprite):
+	def __init__(self,image_file,location):
+		pygame.sprite.Sprite.__init__(self)
+		self.image=pygame.image.load(image_file)
+		self.rect=self.image.get_rect()
+		self.rect.left,self.rect.top=location
 
 def ball_init(right):
     global ball_pos, ball_vel
@@ -67,21 +73,44 @@ def init():
 
 def draw(canvas):
     global paddle1_pos, paddle2_pos, ball_pos, ball_vel, l_score, r_score
-
-    canvas.fill(BLACK)
-    pygame.draw.line(canvas, WHITE, [WIDTH // 2, 0], [WIDTH // 2, HEIGHT], 1)
-    pygame.draw.line(canvas, WHITE, [PAD_WIDTH, 0], [PAD_WIDTH, HEIGHT], 1)
-    pygame.draw.line(
-        canvas, WHITE, [WIDTH - PAD_WIDTH, 0], [WIDTH - PAD_WIDTH, HEIGHT], 1
-    )
-    pygame.draw.circle(canvas, WHITE, [WIDTH // 2, HEIGHT // 2], 70, 1)
+    
+    bg=background('space.png',[0,0])
+    canvas.fill(WHITE)
+    canvas.blit(bg.image,bg.rect)
+ 
+##    canvas.fill(BLACK)
+    ## pygame.draw.line(canvas, WHITE, [WIDTH // 2, 0], [WIDTH // 2, HEIGHT], 1)
+  ##  pygame.draw.line(canvas, WHITE, [PAD_WIDTH, 0], [PAD_WIDTH, HEIGHT], 1)
+   ## pygame.draw.line(
+ ##       canvas, WHITE, [WIDTH - PAD_WIDTH, 0], [WIDTH - PAD_WIDTH, HEIGHT], 1
+ ##   )
+   ## pygame.draw.circle(canvas, WHITE, [WIDTH // 2, HEIGHT // 2], 70, 1)##
 
     if paddle1_pos[1] > HALF_PAD_HEIGHT and paddle1_pos[1] < HEIGHT - HALF_PAD_HEIGHT:
-        paddle1_pos[1] += paddle1_vel
-    elif paddle1_pos[1] == HALF_PAD_HEIGHT and paddle1_vel > 0:
-        paddle1_pos[1] += paddle1_vel
-    elif paddle1_pos[1] == HEIGHT - HALF_PAD_HEIGHT and paddle1_vel < 0:
-        paddle1_pos[1] += paddle1_vel
+    	print(paddle1_pos)
+    	print()
+    	print(paddle1_vel)
+    	print()
+    	paddle1_pos[1] += paddle1_vel[1]
+    elif paddle1_pos[1] == HALF_PAD_HEIGHT and paddle1_vel[1] > 0:
+        paddle1_pos[1] += paddle1_vel[1]
+    elif paddle1_pos[1] == HEIGHT - HALF_PAD_HEIGHT and paddle1_vel[1] < 0:
+        paddle1_pos[1] += paddle1_vel[1]
+        
+    if paddle1_pos[0] > HALF_PAD_WIDTH and paddle1_pos[0] < WIDTH//2 - HALF_PAD_WIDTH:
+        paddle1_pos[0] += paddle1_vel[0]
+    elif paddle1_pos[0] == HALF_PAD_WIDTH and paddle1_vel[0] > 0:
+        paddle1_pos[0] += paddle1_vel[0]
+    elif paddle1_pos[0] == WIDTH//2 - HALF_PAD_WIDTH and paddle1_vel[0] < 0:
+        paddle1_pos[0] += paddle1_vel[0]
+
+    if paddle2_pos[1] > HALF_PAD_HEIGHT and paddle2_pos[1] < HEIGHT - HALF_PAD_HEIGHT:
+        paddle2_pos[1] += paddle2_vel
+    elif paddle2_pos[1] == HALF_PAD_HEIGHT and paddle2_vel > 0:
+        paddle2_pos[1] += paddle2_vel
+    elif paddle2_pos[1] == HEIGHT - HALF_PAD_HEIGHT and paddle2_vel < 0:
+        paddle2_pos[1] += paddle2_vel
+    
 
     if paddle2_pos[1] > HALF_PAD_HEIGHT and paddle2_pos[1] < HEIGHT - HALF_PAD_HEIGHT:
         paddle2_pos[1] += paddle2_vel
@@ -170,18 +199,26 @@ def keydown(event):
         paddle2_vel = -8
     elif event.key == K_DOWN:
         paddle2_vel = 8
-    elif event.key == K_z:
-        paddle1_vel = -8
+    elif event.key == K_LEFT: 
+    	paddle1_vel = -8
+    elif event.key == K_RIGHT: 
+    	paddle1_vel = 8
+    elif event.key == K_w:
+        paddle1_vel[1] = -8
     elif event.key == K_s:
-        paddle1_vel = 8
+        paddle1_vel[1] = 8
+    elif event.key == K_a: 
+    	paddle1_vel[0] = -8
+    elif event.key == K_d: 
+    	paddle1_vel[0] = 8
 
 
 def keyup(event):
     global paddle1_vel, paddle2_vel
 
-    if event.key in (K_z, K_s):
+    if event.key in (K_w, K_s,K_a,K_d):
         paddle1_vel = 0
-    elif event.key in (K_UP, K_DOWN):
+    elif event.key in (K_UP, K_DOWN, K_LEFT, K_RIGHT):
         paddle2_vel = 0
 
 
@@ -191,6 +228,7 @@ init()
 while True:
 
     draw(window)
+   
 
     for event in pygame.event.get():
 
