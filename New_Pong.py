@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb  3 17:55:52 2023
-
-@author: jakel
-"""
 
 import pygame
 import os
